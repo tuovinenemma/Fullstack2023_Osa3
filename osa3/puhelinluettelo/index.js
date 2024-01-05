@@ -6,13 +6,13 @@ const Person = require('./models/person')
 app.use(express.json())
 const morgan = require('morgan')
 
-morgan.token("data", (req, res) => {
-    return JSON.stringify(req.body)
+morgan.token('data', (req) => {
+  return JSON.stringify(req.body)
 })
 
 const cors = require('cors')
 app.use(cors())
-app.use(morgan(":method :url :status :res[content-length] - :response-time ms :data"))
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
 app.use(express.static('build'))
 
 
@@ -27,15 +27,15 @@ app.get('/api/persons', (request, response) => {
   })
 })
 
-app.get('/info', (req, res) => {
+app.get('/info', (req, response) => {
   Person.countDocuments({})
     .then(count => {
-      const dateTimeObject = new Date();
-      res.send("Phonebook has info for " + count + " people " + dateTimeObject.toDateString() + dateTimeObject.toTimeString());
+      const dateTimeObject = new Date()
+      response.send('Phonebook has info for ' + count + ' people ' + dateTimeObject.toDateString() + dateTimeObject.toTimeString())
     })
     .catch(error => {
-      console.error(error);
-      response.status(500).send("Error getting data from the database")
+      console.error(error)
+      response.status(500).send('Error getting data from the database')
     })
 })
 
@@ -55,7 +55,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
@@ -65,17 +65,17 @@ app.put('/api/persons/:id', (request, response, next) => {
   const { name, number } = request.body
 
   Person.findByIdAndUpdate(
-    request.params.id, 
+    request.params.id,
 
     { name, number },
     { new: true, runValidators: true, context: 'query' }
-  ) 
+  )
     .then(updatedPerson => {
       response.json(updatedPerson)
     })
     .catch(error => next(error))
 })
-  
+
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
@@ -96,7 +96,7 @@ app.post('/api/persons', (request, response, next) => {
   person.save().then(savedPerson => {
     response.json(savedPerson)
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 
 const unknownEndpoint = (request, response) => {
